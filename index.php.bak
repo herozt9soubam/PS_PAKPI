@@ -1,0 +1,508 @@
+<?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+include "db.php";
+
+if (!$conn) {
+    die("<h1 style='color: red; text-align: left;'>Database connection failed!</h1>");
+}
+
+function clientServiceImage(array $row): string {
+    $imageUrl = trim((string)($row['image_url'] ?? ''));
+    if ($imageUrl === '') {
+        return '';
+    }
+    if (strpos($imageUrl, 'data:image') === 0 || strpos($imageUrl, 'http') === 0 || strpos($imageUrl, '/') === 0) {
+        return $imageUrl;
+    }
+    if (file_exists("assets/images/services/" . $imageUrl)) {
+        return "assets/images/services/" . $imageUrl;
+    }
+    if (file_exists("uploads/" . $imageUrl)) {
+        return "uploads/" . $imageUrl;
+    }
+    return '';
+}
+
+function clientServiceFeatures($features): array {
+    if (empty($features)) {
+        return [];
+    }
+    $jsonFeatures = json_decode((string)$features, true);
+    if (is_array($jsonFeatures)) {
+        return array_values(array_filter(array_map('trim', $jsonFeatures)));
+    }
+
+    $legacy = trim((string)$features, '{}');
+    if ($legacy === '') {
+        return [];
+    }
+
+    $items = [];
+    foreach (explode(',', $legacy) as $feature) {
+        $clean = trim($feature, "\" \t\n\r\0\x0B");
+        if ($clean !== '') {
+            $items[] = $clean;
+        }
+    }
+    return $items;
+}
+
+$services = [];
+$serviceLoadError = '';
+try {
+    $stmt = $conn->query("
+        SELECT *
+        FROM services
+        WHERE is_visible_to_clients = 1
+        ORDER BY sort_order ASC, id ASC
+    ");
+    $services = $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
+} catch (Exception $e) {
+    error_log("Client service load error: " . $e->getMessage());
+    $serviceLoadError = "Unable to load services. Please check your database connection and try again.";
+}
+
+$pageTitle = "Home";
+include "header.php";
+?>
+
+<!-- 1. REDESIGNED CORPORATE HERO SECTION WITH THREE.JS ARCHITECTURAL BACKGROUND -->
+<section class="corporate-hero">
+    <!-- SUBTLE THREE.JS ARCHITECTURAL BACKGROUND CANVAS LAYER -->
+    <div id="hero-webgl-bg" class="hero-webgl-bg" aria-hidden="true"></div>
+    <div class="hero-backdrop-pattern" aria-hidden="true"></div>
+    
+    <div class="corporate-hero-inner">
+        <!-- LEFT: MESSAGING COLUMN -->
+        <div class="hero-content-col">
+            <div class="hero-badge">
+                <span class="badge-dot"></span>
+                <span>Registered Multi-Sector Enterprise • Imphal West</span>
+            </div>
+            
+            <h1 class="hero-main-title">
+                Building Trust.<br>
+                <span class="highlight-text">Delivering Quality.</span>
+            </h1>
+
+            <p class="hero-summary-text">
+                P.S. Pakpi Enterprises delivers reliable, quality-driven solutions across <strong>Construction Works</strong>, <strong>Institutional Supplies</strong>, <strong>Commercial Bakery</strong>, and <strong>Professional Consultancy</strong> for government, corporate, and private clients throughout Manipur.
+            </p>
+
+            <div class="hero-actions-row">
+                <a href="#services" class="btn-primary hero-btn">
+                    <span>Explore Our Services</span>
+                    <i class="fa-solid fa-arrow-down" aria-hidden="true"></i>
+                </a>
+                <a href="contact.php" class="btn-secondary hero-btn">
+                    <span>Request a Quote</span>
+                    <i class="fa-solid fa-file-lines" aria-hidden="true"></i>
+                </a>
+            </div>
+
+            <!-- TRUST METRICS STRIP -->
+            <div class="hero-trust-metrics">
+                <div class="metric-card">
+                    <i class="fa-solid fa-landmark metric-icon" aria-hidden="true"></i>
+                    <div>
+                        <strong>Government & Private</strong>
+                        <small>Public & commercial execution</small>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <i class="fa-solid fa-layer-group metric-icon" aria-hidden="true"></i>
+                    <div>
+                        <strong>4 Core Pillars</strong>
+                        <small>Comprehensive service delivery</small>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <i class="fa-solid fa-map-pin metric-icon" aria-hidden="true"></i>
+                    <div>
+                        <strong>Manipur Operations</strong>
+                        <small>Kwakeithel, Imphal West</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: REFINED 2D ENTERPRISE CREDENTIALS & SECTOR OVERVIEW CARD -->
+        <div class="hero-visual-col">
+            <div class="hero-credentials-card">
+                <div class="credentials-card-header">
+                    <span class="credentials-badge">Enterprise Profile</span>
+                    <span class="credentials-reg">Imphal West • Registered</span>
+                </div>
+                
+                <h3 class="credentials-title">Operational Sectors</h3>
+                <p class="credentials-desc">Single-window administrative coordination across 4 dedicated business divisions:</p>
+
+                <div class="credentials-sectors-grid">
+                    <a href="service_detail.php?id=73" class="sector-mini-item">
+                        <div class="sector-mini-icon" style="background: rgba(30, 58, 138, 0.1); color: #1E3A8A;">
+                            <i class="fa-solid fa-trowel-bricks"></i>
+                        </div>
+                        <div>
+                            <strong>Construction Works</strong>
+                            <small>Civil infrastructure & structural supervision</small>
+                        </div>
+                    </a>
+
+                    <a href="service_detail.php?id=75" class="sector-mini-item">
+                        <div class="sector-mini-icon" style="background: rgba(2, 132, 199, 0.1); color: #0284C7;">
+                            <i class="fa-solid fa-truck-ramp-box"></i>
+                        </div>
+                        <div>
+                            <strong>Supply & Logistics</strong>
+                            <small>Institutional procurement & warehouse dispatch</small>
+                        </div>
+                    </a>
+
+                    <a href="service_detail.php?id=72" class="sector-mini-item">
+                        <div class="sector-mini-icon" style="background: rgba(217, 119, 6, 0.1); color: #D97706;">
+                            <i class="fa-solid fa-wheat-awn"></i>
+                        </div>
+                        <div>
+                            <strong>Commercial Bakery</strong>
+                            <small>Artisan baking, event catering & retail orders</small>
+                        </div>
+                    </a>
+
+                    <a href="service_detail.php?id=74" class="sector-mini-item">
+                        <div class="sector-mini-icon" style="background: rgba(22, 163, 74, 0.1); color: #16A34A;">
+                            <i class="fa-solid fa-briefcase"></i>
+                        </div>
+                        <div>
+                            <strong>Strategic Consultancy</strong>
+                            <small>Business advisory, documentation & compliance</small>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="credentials-card-footer">
+                    <div class="credentials-stat">
+                        <i class="fa-solid fa-shield-check" style="color: var(--accent);"></i>
+                        <span>Quality Assurance & Transparent Billing</span>
+                    </div>
+                    <a href="contact.php" class="credentials-link">
+                        <span>Get Estimate</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 2. CORPORATE INTRODUCTION & TRUST BANNER -->
+<section class="trust-intro-section">
+    <div class="section-container">
+        <div class="trust-grid">
+            <div class="trust-statement-card">
+                <span class="section-eyebrow">Enterprise Profile</span>
+                <h2 class="trust-heading">An Established Single-Desk Partner for Multi-Disciplinary Delivery</h2>
+                <p class="trust-paragraph">
+                    P.S. Pakpi Enterprises operates with a mission to simplify project execution, procurement, and specialized commercial operations. Whether undertaking civil engineering works, managing bulk material logistics, baking commercial goods, or providing statutory consultancy, our teams adhere strictly to quality assurance, transparent documentation, and time-bound coordination.
+                </p>
+                <div class="trust-bullet-points">
+                    <div class="trust-bullet">
+                        <i class="fa-solid fa-check-circle" aria-hidden="true"></i>
+                        <span>Single-point administrative accountability</span>
+                    </div>
+                    <div class="trust-bullet">
+                        <i class="fa-solid fa-check-circle" aria-hidden="true"></i>
+                        <span>Registered entity operating from Imphal West, Manipur</span>
+                    </div>
+                    <div class="trust-bullet">
+                        <i class="fa-solid fa-check-circle" aria-hidden="true"></i>
+                        <span>Transparent quotes, standardized billing & prompt customer support</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="trust-cards-cluster">
+                <div class="stat-feature-box">
+                    <div class="feature-icon-badge navy">
+                        <i class="fa-solid fa-trowel-bricks" aria-hidden="true"></i>
+                    </div>
+                    <h3>Construction Works</h3>
+                    <p>Civil infrastructure, structural development, and reliable site supervision backed by skilled management.</p>
+                </div>
+                <div class="stat-feature-box">
+                    <div class="feature-icon-badge sky">
+                        <i class="fa-solid fa-truck-ramp-box" aria-hidden="true"></i>
+                    </div>
+                    <h3>Supply & Logistics</h3>
+                    <p>End-to-end procurement, material supply, and institutional delivery coordination across Manipur.</p>
+                </div>
+                <div class="stat-feature-box">
+                    <div class="feature-icon-badge amber">
+                        <i class="fa-solid fa-wheat-awn" aria-hidden="true"></i>
+                    </div>
+                    <h3>Commercial Bakery</h3>
+                    <p>Fresh artisan breads, celebratory cakes, event catering, and wholesale confectionery supplies.</p>
+                </div>
+                <div class="stat-feature-box">
+                    <div class="feature-icon-badge emerald">
+                        <i class="fa-solid fa-briefcase" aria-hidden="true"></i>
+                    </div>
+                    <h3>Strategic Consultancy</h3>
+                    <p>Business advisory, documentation preparation, compliance guidance, and project coordination.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 3. CORE SERVICES CATALOG SECTION -->
+<section class="services-catalog-section" id="services">
+    <div class="section-container">
+        <div class="section-header-row">
+            <div>
+                <span class="section-eyebrow">Our Divisions</span>
+                <h2 class="section-title">Core Business Services</h2>
+                <p class="section-subtitle">Select any division below to view specifications, pricing guidance, and submit online quote inquiries.</p>
+            </div>
+            <div class="section-header-action">
+                <a href="contact.php" class="btn-outline-dark">
+                    <span>Quick Quote Router</span>
+                    <i class="fa-solid fa-paper-plane" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="services-grid">
+            <?php if ($serviceLoadError !== ''): ?>
+                <div class="service-card error-state-card">
+                    <h3><i class="fa-solid fa-triangle-exclamation"></i> Database Unavailable</h3>
+                    <p><?php echo htmlspecialchars($serviceLoadError); ?></p>
+                </div>
+            <?php elseif (empty($services)): ?>
+                <div class="service-card empty-state-card">
+                    <h3><i class="fa-solid fa-folder-open"></i> No Services Currently Listed</h3>
+                    <p>There are no client-visible services active at this time. Please contact our administrative office directly.</p>
+                </div>
+            <?php else: ?>
+                <?php 
+                $iconMap = [
+                    'Bakery' => 'fa-cake-candles',
+                    'Construction' => 'fa-trowel-bricks',
+                    'Consultancy' => 'fa-chart-line',
+                    'Supply Works' => 'fa-boxes-stacked'
+                ];
+                ?>
+                <?php foreach ($services as $row): ?>
+                    <?php
+                        $serviceId = (int)($row['id'] ?? 0);
+                        $serviceTitle = trim((string)($row['title'] ?? 'Service'));
+                        $detailUrl = $serviceId > 0
+                            ? 'service_detail.php?id=' . $serviceId
+                            : 'service_detail.php?service=' . urlencode($serviceTitle);
+                        $quoteUrl = 'contact.php?service=' . urlencode($serviceTitle);
+                        $cardImage = clientServiceImage($row);
+                        $features = clientServiceFeatures($row['features'] ?? '');
+                        $iconClass = $iconMap[$serviceTitle] ?? 'fa-briefcase';
+                    ?>
+                    <article class="modern-service-card">
+                        <!-- CARD HEADER VISUAL -->
+                        <div class="service-card-media">
+                            <?php if ($cardImage !== ''): ?>
+                                <img src="<?php echo htmlspecialchars($cardImage); ?>" alt="<?php echo htmlspecialchars($serviceTitle); ?>" class="service-img" loading="lazy">
+                            <?php else: ?>
+                                <div class="service-img-placeholder">
+                                    <i class="fa-solid <?php echo $iconClass; ?>" aria-hidden="true"></i>
+                                </div>
+                            <?php endif; ?>
+                            <span class="card-division-badge">
+                                <i class="fa-solid <?php echo $iconClass; ?>" aria-hidden="true"></i>
+                                <?php echo htmlspecialchars($serviceTitle); ?>
+                            </span>
+                        </div>
+
+                        <!-- CARD BODY -->
+                        <div class="service-card-body">
+                            <h3 class="service-card-title">
+                                <a href="<?php echo htmlspecialchars($detailUrl); ?>"><?php echo htmlspecialchars($serviceTitle); ?></a>
+                            </h3>
+
+                            <?php if (!empty($row['show_description_to_clients']) || true): ?>
+                                <p class="service-card-desc"><?php echo htmlspecialchars($row['description'] ?: 'Open this service to inspect specifications and submit quotation inquiries.'); ?></p>
+                            <?php endif; ?>
+
+                            <!-- DURATION & PRICE TAGS -->
+                            <div class="service-card-meta-pills">
+                                <?php if (!empty($row['duration'])): ?>
+                                    <span class="meta-pill"><i class="fa-solid fa-clock"></i> <?php echo htmlspecialchars($row['duration']); ?></span>
+                                <?php endif; ?>
+                                <?php if (!empty($row['price_range'])): ?>
+                                    <span class="meta-pill"><i class="fa-solid fa-tag"></i> <?php echo htmlspecialchars($row['price_range']); ?></span>
+                                <?php endif; ?>
+                            </div>
+
+                            <!-- KEY CAPABILITIES LIST -->
+                            <?php if (!empty($features)): ?>
+                                <ul class="service-card-features">
+                                    <?php foreach (array_slice($features, 0, 3) as $feature): ?>
+                                        <li>
+                                            <i class="fa-solid fa-check" aria-hidden="true"></i>
+                                            <span><?php echo htmlspecialchars($feature); ?></span>
+                                        </li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            <?php endif; ?>
+                        </div>
+
+                        <!-- CARD ACTION FOOTER -->
+                        <div class="service-card-footer">
+                            <a href="<?php echo htmlspecialchars($detailUrl); ?>" class="btn-card-primary" aria-label="View specifications for <?php echo htmlspecialchars($serviceTitle); ?>">
+                                <span>Details & 3D View</span>
+                                <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+                            </a>
+                            <a href="<?php echo htmlspecialchars($quoteUrl); ?>" class="btn-card-secondary" aria-label="Request quote for <?php echo htmlspecialchars($serviceTitle); ?>">
+                                <span>Get Quote</span>
+                            </a>
+                        </div>
+                    </article>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </div>
+    </div>
+</section>
+
+<!-- 4. WHY CHOOSE P.S. PAKPI (CAPABILITIES & CREDIBILITY) -->
+<section class="capabilities-section" id="capabilities">
+    <div class="section-container">
+        <div class="text-center section-title-block">
+            <span class="section-eyebrow">Enterprise Strengths</span>
+            <h2 class="section-title">Why Organizations Rely On Us</h2>
+            <p class="section-subtitle max-w-700">A disciplined commitment to verified standards, transparent documentation, and localized execution capabilities.</p>
+        </div>
+
+        <div class="capabilities-grid">
+            <div class="capability-card">
+                <div class="capability-icon-wrap">
+                    <i class="fa-solid fa-diagram-project" aria-hidden="true"></i>
+                </div>
+                <h3>Integrated Multi-Disciplinary Desk</h3>
+                <p>No need to manage disjointed contractors. From civil works and material supply to commercial food services and documentation, our single desk streamlines multi-sector operations.</p>
+            </div>
+
+            <div class="capability-card">
+                <div class="capability-icon-wrap">
+                    <i class="fa-solid fa-file-shield" aria-hidden="true"></i>
+                </div>
+                <h3>Transparent Billing & Specifications</h3>
+                <p>Clear rate breakdowns, comprehensive scope definition, and zero hidden charges ensure confidence for corporate procurement and government audits alike.</p>
+            </div>
+
+            <div class="capability-card">
+                <div class="capability-icon-wrap">
+                    <i class="fa-solid fa-people-roof" aria-hidden="true"></i>
+                </div>
+                <h3>Dedicated Field Coordination</h3>
+                <p>Every assignment is actively monitored by qualified supervisory personnel to maintain strict adherence to project timelines and safety guidelines.</p>
+            </div>
+
+            <div class="capability-card">
+                <div class="capability-icon-wrap">
+                    <i class="fa-solid fa-route" aria-hidden="true"></i>
+                </div>
+                <h3>Deep Local Knowledge of Manipur</h3>
+                <p>Headquartered in Imphal West, we understand localized logistics, terrain requirements, vendor networks, and administrative frameworks across the region.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 5. STRUCTURED WORKFLOW (HOW WE WORK) -->
+<section class="workflow-section" id="workflow">
+    <div class="section-container">
+        <div class="section-header-row">
+            <div>
+                <span class="section-eyebrow">Standard Operating Procedure</span>
+                <h2 class="section-title">How We Coordinate Your Project</h2>
+                <p class="section-subtitle">A straightforward, milestone-based approach ensuring total clarity from initial scope to handover.</p>
+            </div>
+        </div>
+
+        <div class="workflow-steps-grid">
+            <div class="workflow-step-card">
+                <div class="step-number-tag">01</div>
+                <h4>Scope & Requirement Consultation</h4>
+                <p>We review your specific requirements, project location, quantities, and timelines to establish clear operational boundaries.</p>
+            </div>
+            
+            <div class="workflow-step-card">
+                <div class="step-number-tag">02</div>
+                <h4>Transparent Quotation & Agreement</h4>
+                <p>You receive a detailed quotation outlining inclusions, technical prerequisites, payment terms, and delivery schedules.</p>
+            </div>
+
+            <div class="workflow-step-card">
+                <div class="step-number-tag">03</div>
+                <h4>Active Execution & Quality Checks</h4>
+                <p>Works or supplies are mobilized promptly with routine status reporting and adherence to benchmark quality standards.</p>
+            </div>
+
+            <div class="workflow-step-card">
+                <div class="step-number-tag">04</div>
+                <h4>Formal Handover & Continuing Support</h4>
+                <p>Final deliverables, invoices, and completion documentation are delivered with dedicated post-service assistance.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 6. REGISTERED LOCATION & OFFICE STRIP -->
+<section class="location-cta-section" id="location-contact">
+    <div class="section-container">
+        <div class="location-cta-card">
+            <div class="location-cta-content">
+                <span class="section-eyebrow light">Official Registered Location</span>
+                <h2>Visit Our Office in Imphal West</h2>
+                <p>We welcome institutional representatives, contractors, corporate buyers, and individual clients to discuss requirements in person or request custom quotations.</p>
+                <div class="location-details-list">
+                    <div class="loc-item">
+                        <i class="fa-solid fa-map-location-dot" aria-hidden="true"></i>
+                        <span><strong>Address:</strong> Kwakeithel, Thokchom Leikai, Imphal West, Manipur — 795001, India</span>
+                    </div>
+                    <div class="loc-item">
+                        <i class="fa-solid fa-calendar-check" aria-hidden="true"></i>
+                        <span><strong>Business Hours:</strong> Monday through Saturday, 09:00 AM – 06:00 PM IST</span>
+                    </div>
+                </div>
+            </div>
+            <div class="location-cta-actions">
+                <div class="cta-box-card">
+                    <h3>Ready to Request a Quote?</h3>
+                    <p>Select your division and provide project specifics. Our administrative desk will respond promptly.</p>
+                    <a href="contact.php" class="btn-primary w-100 text-center">
+                        <span>Submit Project Inquiry</span>
+                        <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- THREE.JS RUNTIME FOR 3D HERO VIEWPORT -->
+<script type="module" src="assets/js/three-scene.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Interactive button loading state for smooth UX
+    document.querySelectorAll('.modern-service-card a, .hero-actions-row a').forEach(function (link) {
+        link.addEventListener('click', function () {
+            if (this.getAttribute('href') && !this.getAttribute('href').startsWith('#')) {
+                this.classList.add('is-loading');
+                this.setAttribute('aria-busy', 'true');
+            }
+        });
+    });
+});
+</script>
+
+<?php include "footer.php"; ?>

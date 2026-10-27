@@ -1,0 +1,74 @@
+[
+    {
+        "merged": "com.pspakpi.offline.app-release-31:/layout_activity_main.xml.flat",
+        "source": "com.pspakpi.offline.app-main-32:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.pspakpi.offline.app-release-31:/drawable_icon_violet.xml.flat",
+        "source": "com.pspakpi.offline.app-main-32:/drawable/icon_violet.xml"
+    },
+    {
+        "merged": "com.pspakpi.offline.app-release-31:/drawable_hero_panel.xml.flat",
+        "source": "com.pspakpi.offline.app-main-32:/drawable/hero_panel.xml"
+    },
+    {
+        "merged": "com.pspakpi.offline.app-release-31:/drawable_service_card.xml.flat",
+        "source": "com.pspakpi.offline.app-main-32:/drawable/service_card.xml"
+    },
+    {
+        "merged": "com.pspakpi.offline.app-release-31:/drawable_primary_button.xml.flat",
+        "source": "com.pspakpi.offline.app-main-32:/drawable/primary_button.xml"
+    },
+    {
+        "merged": "com.pspakpi.offline.app-release-31:/drawable_logo.png.flat",
+        "source": "com.pspakpi.offline.app-main-32:/drawable/logo.png"
+    },
+    {
+        "merged": "C:\\Users\\cmisn\\.gradle\\daemon\\8.10.2\\com.pspakpi.offline.app-release-31:\\xml_network_security_config.xml.flat",
+        "source": "C:\\Users\\cmisn\\.gradle\\daemon\\8.10.2\\com.pspakpi.offline.app-main-32:\\xml\\network_security_config.xml"
+    },
+    {
+        "merged": "com.pspakpi.offline.app-release-31:/drawable_icon_green.xml.flat",
+        "source": "com.pspakpi.offline.app-main-32:/drawable/icon_green.xml"
+    },
+    {
+        "merged": "com.pspakpi.offline.app-release-31:/drawable_icon_warm.xml.flat",
+        "source": "com.pspakpi.offline.app-main-32:/drawable/icon_warm.xml"
+    },
+    {
+        "merged": "com.pspakpi.offline.app-release-31:/drawable_icon_slate.xml.flat",
+        "source": "com.pspakpi.offline.app-main-32:/drawable/icon_slate.xml"
+    },
+    {
+        "merged": "com.pspakpi.offline.app-release-31:/drawable_chip_outline.xml.flat",
+        "source": "com.pspakpi.offline.app-main-32:/drawable/chip_outline.xml"
+    },
+    {
+        "merged": "com.pspakpi.offline.app-release-31:/drawable_chip_soft.xml.flat",
+        "source": "com.pspakpi.offline.app-main-32:/drawable/chip_soft.xml"
+    },
+    {
+        "merged": "com.pspakpi.offline.app-release-31:/drawable_logo_plate.xml.flat",
+        "source": "com.pspakpi.offline.app-main-32:/drawable/logo_plate.xml"
+    },
+    {
+        "merged": "com.pspakpi.offline.app-release-31:/drawable_bottom_bar.xml.flat",
+        "source": "com.pspakpi.offline.app-main-32:/drawable/bottom_bar.xml"
+    },
+    {
+        "merged": "com.pspakpi.offline.app-release-31:/drawable_white_button.xml.flat",
+        "source": "com.pspakpi.offline.app-main-32:/drawable/white_button.xml"
+    },
+    {
+        "merged": "C:\\Users\\cmisn\\.gradle\\daemon\\8.10.2\\com.pspakpi.offline.app-release-31:\\layout_activity_main.xml.flat",
+        "source": "C:\\Users\\cmisn\\.gradle\\daemon\\8.10.2\\com.pspakpi.offline.app-main-32:\\layout\\activity_main.xml"
+    },
+    {
+        "merged": "com.pspakpi.offline.app-release-31:/drawable_icon_blue.xml.flat",
+        "source": "com.pspakpi.offline.app-main-32:/drawable/icon_blue.xml"
+    },
+    {
+        "merged": "com.pspakpi.offline.app-release-31:/drawable_stat_panel.xml.flat",
+        "source": "com.pspakpi.offline.app-main-32:/drawable/stat_panel.xml"
+    }
+]

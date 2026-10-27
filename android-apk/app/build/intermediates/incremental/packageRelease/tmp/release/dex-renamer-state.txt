@@ -1,0 +1,4 @@
+#Wed May 20 14:48:40 IST 2026
+base.0=D\:\\xampp\\htdocs\\ps-pakpi\\android-apk\\app\\build\\intermediates\\dex\\release\\mergeDexRelease\\classes.dex
+path.0=classes.dex
+renamed.0=classes.dex

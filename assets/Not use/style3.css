@@ -1,0 +1,13 @@
+*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI,Arial,sans-serif}
+body{background:#f4f6fb;color:#333}
+header{background:#fff;padding:20px;box-shadow:0 4px 10px rgba(0,0,0,.08)}
+.header-container{max-width:1200px;margin:auto;display:flex;align-items:center;gap:20px}
+.logo{height:70px;width:70px;border:2px dashed #1f3fd7;display:flex;align-items:center;justify-content:center;color:#1f3fd7;font-size:12px}
+.header-text h1{color:#1f3fd7;font-size:2rem}
+.header-text p{color:#555}
+.services{max-width:1200px;margin:auto;padding:60px 20px}
+.services h2{text-align:center;font-size:2.2rem;margin-bottom:40px;color:#1f3fd7}
+.service-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:25px}
+.service-card{background:#fff;padding:30px 20px;border-radius:12px;text-align:center;box-shadow:0 6px 15px rgba(0,0,0,.1);transition:.3s;border-top:4px solid #1f3fd7}
+.service-card:hover{transform:translateY(-8px)}
+footer{background:#1f3fd7;color:#fff;text-align:center;padding:15px;font-size:.9rem}
